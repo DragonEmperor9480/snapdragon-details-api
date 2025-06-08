@@ -66,3 +66,25 @@ func UpdateProcessor(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(processor)
 }
+
+func DeleteProcessor(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	id := params["id"]
+
+	var processor models.Processor
+
+	if err := utils.DB.First(&processor, id).Error; err != nil {
+		http.Error(w, "Processor not found", http.StatusNotFound)
+		return
+	}
+
+	if err := utils.DB.Delete(&processor).Error; err != nil {
+		http.Error(w, "Failed to delete Processor", http.StatusInternalServerError)
+		return
+	}
+
+	// it means 204 no Content
+	w.WriteHeader(http.StatusNoContent)
+
+}
