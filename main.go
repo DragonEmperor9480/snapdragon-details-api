@@ -3,11 +3,23 @@ package main
 import (
 	"log"
 	"net/http"
-	"snapdragon-details-api/routes"
+	"snapdragon-details-api/controllers"
+	"snapdragon-details-api/models"
+	"snapdragon-details-api/utils"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	r := routes.RegisterRoutes()
-	log.Println("Server running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	utils.ConnectDB()
+
+	utils.DB.AutoMigrate(&models.Processor{})
+
+	r := mux.NewRouter()
+
+	r.HandleFunc("/api/processors", controllers.CreateProcessor).Methods("POST")
+	r.HandleFunc("/api/processors", controllers.GetAllProcessors).Methods("GET")
+
+	log.Println("Server running on port http://localhost:8080")
+	http.ListenAndServe(":8080", r)
 }

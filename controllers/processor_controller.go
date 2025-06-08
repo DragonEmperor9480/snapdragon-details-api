@@ -4,14 +4,37 @@ import (
 	"encoding/json"
 	"net/http"
 	"snapdragon-details-api/models"
+	"snapdragon-details-api/utils"
 )
 
-var processors = []models.Processor{
-	{ID: 1, Name: "Snapdragon 888", Cores: 8, Frequency: "2.84 GHz"},
-	{ID: 2, Name: "Snapdragon 8 Gen 1", Cores: 8, Frequency: "3.0 GHz"},
+func CreateProcessor(w http.ResponseWriter, r *http.Request) {
+	var processor models.Processor
+
+	if err := json.NewDecoder(r.Body).Decode(&processor); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	result := utils.DB.Create(&processor)
+	if result.Error != nil {
+		http.Error(w, "Failed to save processor", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(processor)
 }
 
-func GetAllProcessors(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-Type","application/json")
+func GetAllProcessors(w http.ResponseWriter, r *http.Request) {
+	var processors []models.Processor
+
+	result := utils.DB.Find(&processors)
+	if result.Error != nil {
+		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(processors)
+
 }

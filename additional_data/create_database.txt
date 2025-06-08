@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS snapdb;
+USE snapdb;
+
+CREATE TABLE processors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    cores INT NOT NULL,
+    frequency VARCHAR(20) NOT NULL
+);
